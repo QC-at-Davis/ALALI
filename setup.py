@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name = 'ALALI',
   packages = ['ALALI'],
-  version = '0.0.1',
+  version = '0.0.2',
   license='gpl-3.0',
   description = 'Automated Loading assuming Atomic Level Interactions (ALALI): Mapping molecules to quantum computers',
   author = 'Jack Goon, John Long, Samarth Sandeep',
@@ -14,8 +14,7 @@ setup(
           'networkx',
           'pytket',
           'pytket-qiskit',
-          'matplotlib',
-          'rdkit @ https://github.com/rdkit/rdkit/archive/master.zip#egg=rdkit' #not sure on this
+          'matplotlib' #,'rdkit @ https://github.com/rdkit/rdkit/archive/master.zip#egg=rdkit' #not sure on this
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
