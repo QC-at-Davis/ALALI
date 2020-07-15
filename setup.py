@@ -1,4 +1,4 @@
-from distutils.core import setup
+cfrom distutils.core import setup
 setup(
   name = 'ALALI',
   packages = ['ALALI'],
@@ -14,13 +14,13 @@ setup(
           'networkx',
           'pytket',
           'pytket-qiskit',
-          'matplotlib' #,'rdkit @ https://github.com/rdkit/rdkit/archive/master.zip#egg=rdkit' #not sure on this
+          'matplotlib' #rdkit required, must be installed as a prerequisite
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
-    'Intended Audience :: Chemists',
+    'Intended Audience :: Science/Research',
     'Topic :: Software Development :: Build Tools',
-    'License :: OSI Approved :: GNU General Public License v3.0',   
+    'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',   
     'Programming Language :: Python :: 3',
     'Programming Language :: Python :: 3.4',
     'Programming Language :: Python :: 3.5',
