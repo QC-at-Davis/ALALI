@@ -8,7 +8,7 @@ setup(
   author = 'Jack Goon, John Long, Samarth Sandeep',
   author_email = 'jackbgoon@gmail.com',
   url = 'https://github.com/QC-at-Davis/ALALI',
-  download_url = 'https://github.com/user/reponame/archive/v_01.tar.gz', #Need to upload to github before getting download link
+  download_url = 'https://github.com/QC-at-Davis/ALALI/archive/0.0.2.tar.gz',
   keywords = ['CHEMISTRY', 'QUANTUM', 'QUANTUM CHEMISTRY', 'QUANTUM COMPUTING', 'ATOM', 'QUBIT', 'MAP', 'GRAPH'],   # Keywords that define your package best
   install_requires=[            # pip dependencies, not sure what to do w RDKit
           'networkx',
