@@ -129,7 +129,15 @@ class molecule:
 		if self.graph == None:
 			self.graphMol()
 		# Generate a pytket circuit
-		self.circuit = circuit_gen(self.graph)
+	    # - generate list of edges along with list of inverted edges
+	    # - combine the inverted edges with non-inverted ones
+		edges = list(self.graph.edges)
+		inv_edges = [(edge[1], edge[0]) for edge in edges]
+		cxs = [val for pair in zip(edges, inv_edges) for val in pair]
+	    # Create circuit and unpack each edge, applying it as a CX
+		self.circuit = Circuit(self.graph.number_of_nodes())
+		for edge in cxs:
+			self.circuit.CX(*edge)
 
 	def output(self, name):
 		"""Outputs RDKit mol, networkx graph, and/or circuit commands as files.
@@ -148,12 +156,6 @@ class molecule:
 		# save pytket circuit commands as .txt file
 		if self.circuit:
 			print(self.circuit.get_commands(),file=open(name+".txt", 'w+'))
-
-
-
-if __name__ == '__main__':
-	proline = molecule("OC(=O)C1CCCN1", "smi", "proline")
-	proline.output("proline")
 
 
 
