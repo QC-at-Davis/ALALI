@@ -5,23 +5,23 @@ from pytket.routing import Architecture, route
 from pytket.passes import SequencePass, DecomposeMultiQubitsIBM, DecomposeSingleQubitsIBM
 from pytket.predicates import CompilationUnit
 
-# Load graphml file and convert to NetworkX Graph
 def load_graphml(graphml_file):
+    """Load graphml file and convert to Networkx graph"""
     return nx.read_graphml(graphml_file)
 
-# Generate the paired CXs representing interactions between atoms
 def cx_gen(mol_graph):
-
+    """Generate the paired CXs representing interactions between atoms, given networkx graph."""
     # generate list of tuples containing the edges in the integer-labeled graph
-    edges = list(mol_graph.edges) #EDITED TO BE MOL_GRAPH INSTEAD OF MOLE_GRAPH_INTS, SINCE NETWORKX GRAPHS ARE DIFFERENT
+    edges = list(mol_graph.edges)
     # create a list of INVERTED edges from the original edge list
     inv_edges = [(edge[1], edge[0]) for edge in edges]
     # - Pair together an edge with its inverted counterpart
     # - Store them in one large list
     return [val for pair in zip(edges, inv_edges) for val in pair]
 
-# generate the initial, unrouted circuit with the CXs
+
 def circuit_gen(graph):
+    """Generate the initial, unrouted circuit with the CXs, given a networkx graph"""
     # - generate list of edges along with list of inverted edges
     # - combine the inverted edges with non-inverted ones
     edges = list(graph.edges)
@@ -36,16 +36,16 @@ def circuit_gen(graph):
     # return the mapping from atoms to integers and the generated constraint circuit
     return constraint_test_circuit
 
-# convert circuit to IBM Qiskit compatible verison
 def circuit_to_ibm(tk_circuit):
+    """Convert circuit to IBM Qiskit compatible verison, given pytket circuit"""
     return tk_to_qiskit(tk_circuit)
 
-# print the circuit (implicitly convert to IBM Qiskit supported gates)
 def print_circuit(tk_circuit):
+    """Convert circuit to IBM Qiskit supported gates, and print that circuit"""
     print(tk_to_qiskit(tk_circuit))
 
-# Route the circuit to a given architecture map
 def route_circuit(tk_circuit, architecture_map):
+    """Route the circuit to a given architecture map"""
     architecture = Architecture(architecture_map)
     routed_circuit = route(tk_circuit, architecture)
     return routed_circuit
@@ -53,6 +53,7 @@ def route_circuit(tk_circuit, architecture_map):
 # If a subsequent print of the routed circuit fails...
 # Invoke the decomposition function with varying "levels" of decomposition
 def decompose_circuit(tk_circuit, decomposition_lvl):
+    """Function to decompose circuit, with decomposition_lvl 1 decomposing BRIDGEs and 2 decomposing as much as possible (SWAPs)"""
     cu = CompilationUnit(tk_circuit)
     # 1 to decompose BRIDGE gates, 2 to decompose as far as possible (includes acceptable SWAPs!)
     if decomposition_lvl == 1:
