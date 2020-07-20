@@ -1,67 +1,168 @@
 from rdkit.Chem import AllChem as Chem # AllChem has most of Chem, and also includes advanced algorithms
 import networkx as nx
-import matplotlib.pyplot as plt
 import sys
+from Constraint import circuit_gen 
+from pytket.circuit import Circuit
 
 class molecule:
-	# Initialize input data and variables, run the self.main() function
-	def __init__(self, data, filetype, name="molecule", AddHs=True, ThreeD=True, doall=True):
+	"""Class for working with a molecule and converting to an RDKit/Networkx/Pytket representation.
+
+	Parameters
+	----------
+	data : str
+		molecule data, either a SMILES string or a .mol file path string.
+	filetype : str
+		type of data input, 'smi' for SMILES or 'mol' for .mol.
+	addHs : boolean, optional
+		set to False if Hydrogens should not be added to the molecule.
+	threeD : boolean, optional
+		set to False if 3D conformation does not need to be calculated.
+	doall : boolean, optional
+		set to False if RDKit/Networkx/Pytket representations should not be created initially.
+
+	Attributes
+	----------
+	data, filetype, addHs, threeD, doall : see Parameters section.
+	mol : RDKit molecule
+		RDKit molecule directly created from the data.
+	graph : networkx graph
+		Networkx graph with nodes:atoms and edges:bonds. 
+		Nodes have the attribute 'symbol' which gives the element name (str).
+		Edges have the attribute 'type' which gives the number of bonds (1, 1.5, 2, etc).
+	circuit : pytket circuit. 
+		Qubits:atoms and CXs:bonds, where the qubits are labelled with integers 
+		that match the networkx graph node labels and RDKit molecule atomIdx
+	"""
+
+	def __init__(self, data, filetype, addHs=True, threeD=True, doall=True):
+		"""When a molecule is created, an RDKit molecule is automatically created from the input data
+		and filetype and stored in self.mol"""
+		# initial data
 		self.data = data
 		self.filetype = filetype
-		self.name = name
-		self.AddHs = AddHs
-		self.ThreeD = ThreeD
-		self.mol = None
-		self.graph = nx.Graph()
+		# since initial data is required, we can automatically create an RDKit molecule
+		self.inputMol()
+		# optional parameters for whether to add hydrogens or a 3D conformation
+		self.addHs = addHs
+		self.threeD = threeD
+		# initialize graph and circuit as None, so that we can ignore them if they haven't been created yet
+		self.graph = None
+		self.circuit = False # Use False as default, since that != operator doesn't work on pytket circuit object
+		# automatically create graph and circuit if one chooses to
 		if doall:
 			self.doall()
 
-	# Start with SMILES or MOL format, create RDKit molecule, add Hydrogens, add 3D force field using ETKDG
 	def inputMol(self):
+		"""Function for inputting molecule data and creating an RDKit molecule."""
+		# import from smiles string
 		if self.filetype == "smi":
-			self.mol = Chem.MolFromSmiles(self.data)
-		elif self.filetype == "mol":
-			self.mol = Chem.MolFromMolFile(self.data)
+			try:
+				self.mol = Chem.MolFromSmiles(self.data) # generate RDKit molecule
+			# raise an error if RDKit molecule creation goes wrong
+			except:
+				raise Exception("Molecule could not be created. Please check that the data and filetype inputs are correct.")
+				sys.exit(1)
+		# import from .mol file
+		elif filetype == "mol":
+			try:
+				self.mol = Chem.MolFromMolFile(self.data) # generate RDKit molecule
+			# raise an error if RDKit molecule creation goes wrong
+			except:
+				raise Exception("Molecule could not be created. Please check that the data and filetype inputs are correct.")
+				sys.exit(1)
+		# if filetype doesn't fall into those categories, raise an error
 		else:
 			raise Exception("Accepted data inputs: SMILES string or MOL filepath\nAccepted filetype inputs: 'smi' or 'mol'\nTry again.")
 			sys.exit(1)
 
-	# Add hydrogens, make 3D
+	def doall(self):
+		"""Adds molecule features, creates a networkx graph and pytket circuit by calling class functions""" 
+		self.addToMol() # Add hydrogens and conformation data, if applicable
+		self.graphMol()	# Generate a networkx graph
+		self.circuitMol() # Generate a pytket circuit
+
 	def addToMol(self):
-		if self.mol == None:
-			raise Exception("Molecule was incorrectly created. Cannot add Hydrogens or 3D coordinates.")
-			sys.exit(1)
-		else:
-			if self.AddHs:
-				self.mol = Chem.AddHs(self.mol)
-			if self.ThreeD:
-				Chem.EmbedMolecule(self.mol, randomSeed=0xf00d)
+		"""Add hydrogens to molecule and/or calculate 3D conformation of molecule.
 
-	# Create graph of nodes=atoms and edges=bonds.
-	# TODO: Add geometry data, charges
+		Notes
+		-----
+		Whether or not to add hydrogens or generate a conformation can be set with the `addHs` and 
+		`threeD` arguments when the molecule instance is created. You can also edit these parameters
+		with:
+
+		>>> molecule=(example_data, example_filetype) #create molecule instance
+		>>> molecule.addHs = True #if you want hydrogens
+		>>> molecule.addHs = False #if you do not want hydrogens
+
+		and the same goes for `threeD`"""
+		if self.addHs:
+			self.mol = Chem.AddHs(self.mol)
+		if self.threeD:
+			Chem.EmbedMolecule(self.mol, randomSeed=0xf00d)
+
 	def graphMol(self):
-		if self.mol == None:
-			raise Exception("Molecule was incorrectly created. Graph couldn't be created.")
-			sys.exit(1)
-		else:
-			for atom in self.mol.GetAtoms():
-				self.graph.add_node(atom.GetIdx(), symbol = atom.GetSymbol())
-			for bond in self.mol.GetBonds():
-				self.graph.add_edge(bond.GetBeginAtomIdx(), bond.GetEndAtomIdx(), type = bond.GetBondTypeAsDouble())
+		"""Create a networkx graph for molecule, with nodes:atoms and edges:bonds. 
 
-	# Output in the form of files (.mol file, networkx graph as .graphml) and/or print (.mol data, networkx graph visualized)
-	def output(self,file=True, printing=True):
-		molBlock = Chem.MolToMolBlock(self.mol)
-		if file:
-			print(molBlock,file=open(self.name+".mol",'w+'))
-			nx.write_graphml(self.graph, self.name+".graphml")
-		if printing:
-			print(molBlock)
-			nx.draw(self.graph, with_labels=True)
-			plt.show()
+		Notes
+		-----
+		Graph nodes are labelled with unique integers. The atom element is stored in the node attribute 
+		"symbol" as a string.
+		The bond type (single, double, etc) is stored in the edge attribute "type" as a double."""
+		# create networkx graph instance
+		self.graph = nx.Graph()
+		# add atoms as nodes, labelled with the RDKit atom index and symbol attribute with the element type (string)
+		for atom in self.mol.GetAtoms():
+			self.graph.add_node(atom.GetIdx(), symbol = atom.GetSymbol())
+		# add bonds as edges, with type attribute with the bond type (double)
+		for bond in self.mol.GetBonds():
+			self.graph.add_edge(bond.GetBeginAtomIdx(), bond.GetEndAtomIdx(), type = bond.GetBondTypeAsDouble())
 
-	# input molecule, add Hs/3D coordinates, and create graph
-	def doall(self): #does all of the functions, to be run in __init__()
-		self.inputMol()
-		self.addToMol()
-		self.graphMol()
+	def circuitMol(self):
+		"""a function for creating a pytket circuit for the molecule, with qubits:atoms and CXs:bonds.
+		
+		Notes
+		----------
+		Pytket circuit qubits are labelled with unique index integers that align to the 
+		RDKit molecule and networkx graph.
+		If there doesn't yet exist a graph to circuit, a graph will be created automatically."""
+		# If graph doesn't exist yet, create one
+		if self.graph == None:
+			self.graphMol()
+		# Generate a pytket circuit
+		self.circuit = circuit_gen(self.graph)
+
+	def output(self, name):
+		"""Outputs RDKit mol, networkx graph, and/or circuit commands as files.
+		
+		Parameters
+		----------
+		name : string
+			name used for output files"""
+		# save RDKit molecule + conformation data (if applicable) as .mol file
+		if self.mol != None:
+			molBlock = Chem.MolToMolBlock(self.mol)
+			print(molBlock,file=open(name+".mol",'w+'))
+		# save networkx graph as .graphml file
+		if self.graph != None:
+			nx.write_graphml(self.graph, name+".graphml")
+		# save pytket circuit commands as .txt file
+		if self.circuit:
+			print(self.circuit.get_commands(),file=open(name+".txt", 'w+'))
+
+
+
+if __name__ == '__main__':
+	proline = molecule("OC(=O)C1CCCN1", "smi", "proline")
+	proline.output("proline")
+
+
+
+
+
+
+
+
+
+
+
+
