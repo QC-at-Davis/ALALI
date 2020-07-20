@@ -56,7 +56,7 @@ pytket_circuit = example.circuit
 
 Now, we can output a .mol file (RDKit molecule), .graphml file (Networkx graph), and .txt file (Pytket circuit commands)
 ```
-circuit = example.output("example_molecule")
+example.output("example_molecule")
 ```
 
 That's it! For more in-depth examples and documentation, see the [Github wiki](https://github.com/QC-at-Davis/ALALI/wiki)
