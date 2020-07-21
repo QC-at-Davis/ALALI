@@ -1,7 +1,6 @@
 from rdkit.Chem import AllChem as Chem # AllChem has most of Chem, and also includes advanced algorithms
 import networkx as nx
 import sys
-from Constraint import circuit_gen 
 from pytket.circuit import Circuit
 
 class molecule:

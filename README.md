@@ -21,7 +21,9 @@ It can be easily installed with:
 ```
 conda install -c conda-forge rdkit
 ```
-
+Pytket is also a prerequisite, but it will be automatically installed with the pip command shown below.
+It is important to note that Pytket currently does not support Windows, only Linux/MacOS. 
+Therefore, ALALI also only supports Linux/MacOS.
 ### Installation
 Once RDKit is installed, ALALI can be installed with:
 
@@ -56,7 +58,7 @@ pytket_circuit = example.circuit
 
 Now, we can output a .mol file (RDKit molecule), .graphml file (Networkx graph), and .txt file (Pytket circuit commands)
 ```
-circuit = example.output("example_molecule")
+example.output("example_molecule")
 ```
 
 That's it! For more in-depth examples and documentation, see the [Github wiki](https://github.com/QC-at-Davis/ALALI/wiki)
