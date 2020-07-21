@@ -21,7 +21,9 @@ It can be easily installed with:
 ```
 conda install -c conda-forge rdkit
 ```
-
+Pytket is also a prerequisite, but it will be automatically installed with the pip command shown below.
+It is important to note that Pytket currently does not support Windows, only Linux/MacOS. 
+Therefore, ALALI also only supports Linux/MacOS.
 ### Installation
 Once RDKit is installed, ALALI can be installed with:
 
