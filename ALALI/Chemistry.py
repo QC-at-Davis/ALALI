@@ -21,7 +21,16 @@ class molecule:
 
 	Attributes
 	----------
-	data, filetype, addHs, threeD, doall : see Parameters section.
+	data : str
+		molecule data, either a SMILES string or a .mol file path string.
+	filetype : str
+		type of data input, 'smi' for SMILES or 'mol' for .mol.
+	addHs : boolean, optional
+		set to False if Hydrogens should not be added to the molecule.
+	threeD : boolean, optional
+		set to False if 3D conformation does not need to be calculated.
+	doall : boolean, optional
+		set to False if RDKit/Networkx/Pytket representations should not be created initially.
 	mol : RDKit molecule
 		RDKit molecule directly created from the data.
 	graph : networkx graph
