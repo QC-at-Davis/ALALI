@@ -1,4 +1,30 @@
 class ibm:
+    """Class for storing a collection of IBMQ architectures
+
+    IBMQ architectures are stored as a list of qubit pairings, with the pairings in the form of tuples.
+
+    Attributes
+    ----------
+    ibmqx2 : list
+    ibmq_vigo : list
+    ibmq_ourense : list
+    ibmq_london : list
+    ibmq_burlington : list
+    ibmq_essex : list
+    ibmq_16_melbourne : list
+    ibmq_20_tokyo : list
+    ibmq_20_poughkeepsie : list
+    ibmq_20_johannesburg : list
+    ibmq_20_boeblinge : list
+
+    Example
+    -------
+    
+    >>>proline = ALALI.molecule("C1CC(NC1)C(=O)O", "smi")
+    >>>circuit = proline.circuit
+    >>>architecture = ALALI.ibm.ibmq_20_tokyo
+    >>>ALALI.route_circuit(circuit, architecture)"""
+
 
     # Yorktown?, 5 qubits
     ibmqx2 = [(0, 1),(0, 2),
