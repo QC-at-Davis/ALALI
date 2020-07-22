@@ -39,13 +39,13 @@ ALALI can be easily imported with:
 From there, a molecule instance can be created:
 
 ```
-example = ALALI.molecule(data, filetype, AddHs=True, ThreeD=True, doall=True)
+example = ALALI.molecule(data, filetype, addHs=True, threeD=True, doall=True)
 ```
 
 * `data` = a SMILES string or a .mol file path
 * `filetype`: either `'smi'` for SMILES data, or `'mol'` for a .mol file
-* `AddHs`: for adding Hydrogens to a molecule
-* `ThreeD`: for generating a 3D conformation using RDKit's ETKDG method
+* `addHs`: for adding Hydrogens to a molecule
+* `threeD`: for generating a 3D conformation using RDKit's ETKDG method
 * `doall`: for automatically generating an RDKit molecule and networkx graph when you create the instance
 
 RDKit molecule, networkx graph, and pytket circuit can be accessed as class attributes
