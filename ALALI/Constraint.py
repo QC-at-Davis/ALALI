@@ -1,6 +1,6 @@
 import networkx as nx
 from pytket.circuit import Circuit
-from pytket.qiskit import tk_to_qiskit
+from pytket.extensions.qiskit import tk_to_qiskit
 from pytket.routing import Architecture, route
 from pytket.passes import SequencePass, DecomposeMultiQubitsIBM, DecomposeSingleQubitsIBM
 from pytket.predicates import CompilationUnit
